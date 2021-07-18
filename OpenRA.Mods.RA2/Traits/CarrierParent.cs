@@ -107,9 +107,9 @@ namespace OpenRA.Mods.RA2.Traits
 			return count;
 		}
 
-		void INotifyAttack.PreparingAttack(Actor self, Target target, Armament a, Barrel barrel) { }
+		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
 
-		void INotifyAttack.Attacking(Actor self, Target target, Armament a, Barrel barrel)
+		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			if (IsTraitDisabled)
 				return;
@@ -145,13 +145,14 @@ namespace OpenRA.Mods.RA2.Traits
 			if (loadedTokens.Any())
 				self.RevokeCondition(loadedTokens.Pop());
 
+			var localTarget = target;
 			self.World.AddFrameEndTask(w =>
 			{
 				// The actor might had been trying to do something before entering the carrier.
 				// Cancel whatever it was trying to do.
 				carrierChildEntry.SpawnerChild.Stop(carrierChildEntry.Actor);
 
-				carrierChildEntry.SpawnerChild.Attack(carrierChildEntry.Actor, target);
+				carrierChildEntry.SpawnerChild.Attack(carrierChildEntry.Actor, localTarget);
 			});
 		}
 
